@@ -1,12 +1,14 @@
+import org.jsoup.nodes.Document;
+
 import java.util.ArrayList;
 
 public class Link {
 
-    private String linkName;
+    private final String linkName;
     private String shortLinkName;
     private String linkBody;
     private int statusCode;
-    private ArrayList<Link> children;
+    private final ArrayList<Link> children;
     private int level;
 
     public Link(String linkName, String linkBody, int statusCode) {

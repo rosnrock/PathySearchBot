@@ -4,18 +4,21 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.concurrent.RecursiveTask;
 
 public class LinkLoader extends RecursiveTask<Link> {
 
     private final Link loadLink;
     private final Link rootLink;
-    private static final Set<String> checkedLinks = new HashSet<>();
-    public static final List<Link> loadedLinks = new ArrayList<>();
+    private static final Set<String> checkedLinks;
+    public static final List<Link> loadedLinks;
+
+    static {
+        checkedLinks = new HashSet<>();
+        loadedLinks = new ArrayList<>();
+    }
 
     public LinkLoader(Link loadLink, Link rootLink) {
         this.loadLink = loadLink;
@@ -54,7 +57,9 @@ public class LinkLoader extends RecursiveTask<Link> {
         loadLink.setStatusCode(response.statusCode());
         Document siteHTML = response.parse();
         loadLink.setLinkBody(siteHTML.outerHtml());
-        Elements linkElements = siteHTML.select("a[href]"); // выгружаем все ссылки со страницы
+
+        // выгружаем все ссылки со страницы в текущий список ссылок
+        Elements linkElements = siteHTML.select("a[href]");
         linkElements.forEach(element -> {
             String link = element.attr("href");
             link = link.endsWith("/") ? link.substring(0, link.length() - 1) : link; // если ссылка заканчивается на /, убираем его
@@ -77,5 +82,12 @@ public class LinkLoader extends RecursiveTask<Link> {
         SystemUtils.interrupt(500L);
 
         return children;
+    }
+
+    public static String getTextByTag(String tag, String siteHTML) {
+        Elements elements = Jsoup.parse(siteHTML).select(tag);
+        StringBuilder outputText = new StringBuilder();
+        elements.forEach(element -> outputText.append(element.text()));
+        return outputText.toString();
     }
 }
