@@ -1,36 +1,34 @@
-import org.jsoup.nodes.Document;
-
-import java.io.IOException;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ForkJoinPool;
 
 public class Main {
 
     public static void main(String[] args) throws SQLException {
 
-        String url = "https://skillbox.ru";
-        Link link = new Link(url, "", 0);
-
-        DBConnection connection = DBConnection.getInstance();
-//        LinkLoader loadLink = new LinkLoader(link, link);
-        connection.downloadPages();
-
-        // выгрузка страниц в БД
-//        new ForkJoinPool().invoke(loadLink);
-//        connection.uploadLinks(LinkLoader.loadedLinks);
-
-        // выгрузка страниц из БД после обработки и лемматизация каждой
-
-
-
-//        String text = "Повторное появление леопарда в Осетии позволяет предположить, " +
-//                "что леопард постоянно обитает в некоторых районах Северного Кавказа.";
-//        for (Map.Entry<TreeSet<String>, Integer> treeSetIntegerEntry : Lemmatizer.getCountWords(text).entrySet()) {
-//            System.out.println(treeSetIntegerEntry.getKey().first() + " - " + treeSetIntegerEntry.getValue());
+        /* Процесс индексации сайта */
+        // Задание сайта для индексации
+//        List<String> urls = Arrays.asList("https://skillfactory.ru", "https://gb.ru");
+//        for (String url : urls) {
+//            Link link = new Link(url, "", 0);
+//            // Подключение к БД
+            DBConnection connection = DBConnection.getInstance();
+//            // Выгрузка дерева страниц во внутреннюю коллекцию
+//            LinkLoader loadLink = new LinkLoader(link, link);
+//            new ForkJoinPool().invoke(loadLink);
+//            // Выгрузка дерева страниц в БД
+//            connection.uploadLinks(LinkLoader.loadedLinks);
+//            // Индексация выгруженных страниц
+//            connection.indexPages();
+//            /* --- */
 //        }
+
+        /* Процесс поиска по строке */
+        String findQuery = "аналитика данных разработка";
+        Map<TreeSet<String>, Integer> words = Lemmatizer.getCountWords(findQuery);
+        LinkedList<Lemma> lemmaList = new LinkedList<>(DBConnection.getLemmaFrequency(words));
+        List<Integer> idPages = DBConnection.getPages(new LinkedList<>(DBConnection.getLemmaFrequency(words)), new ArrayList<>(), true);
+        List<SearchResult> searchResults = DBConnection.getSearchResult(idPages, lemmaList);
+        searchResults.forEach(System.out::println);
     }
 }

@@ -1,5 +1,3 @@
-import org.jsoup.nodes.Document;
-
 import java.util.ArrayList;
 
 public class Link {
