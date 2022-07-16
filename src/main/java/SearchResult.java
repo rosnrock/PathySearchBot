@@ -1,6 +1,8 @@
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
+import java.util.List;
+
 public class SearchResult {
 
     private String uri;
@@ -8,13 +10,16 @@ public class SearchResult {
     private String snippet;
     private double absRelevance;
     private double relRelevance;
+    private List<Lemma> lemmaList;
 
-    public SearchResult(String uri, String title, String snippet, double absRelevance, double relRelevance) {
+    public SearchResult(String uri, String html, double absRelevance, double relRelevance, List<Lemma> lemmaList) {
         this.uri = uri;
-        setTitle(title);
-        this.snippet = snippet;
         this.absRelevance = absRelevance;
         this.relRelevance = relRelevance;
+        this.lemmaList = lemmaList;
+        Document document = Jsoup.parse(html);
+        setTitle(document);
+        setSnippet(document);
     }
 
     public String getUri() {
@@ -29,8 +34,7 @@ public class SearchResult {
         return title;
     }
 
-    public void setTitle(String html) {
-        Document document = Jsoup.parse(html);
+    public void setTitle(Document document) {
         this.title = document.title();
     }
 
@@ -38,8 +42,8 @@ public class SearchResult {
         return snippet;
     }
 
-    public void setSnippet(String snippet) {
-        this.snippet = snippet;
+    public void setSnippet(Document document) {
+        this.snippet = Lemmatizer.getSnippet(lemmaList, document.text());
     }
 
     public double getAbsRelevance() {

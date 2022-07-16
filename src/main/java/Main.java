@@ -30,5 +30,6 @@ public class Main {
         List<Integer> idPages = DBConnection.getPages(new LinkedList<>(DBConnection.getLemmaFrequency(words)), new ArrayList<>(), true);
         List<SearchResult> searchResults = DBConnection.getSearchResult(idPages, lemmaList);
         searchResults.forEach(System.out::println);
+
     }
 }

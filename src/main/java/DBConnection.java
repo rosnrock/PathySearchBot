@@ -212,7 +212,7 @@ public class DBConnection {
             while (resultSet.next()) {
                 idPagesFound.add(resultSet.getInt("page_id"));
             }
-        // если поиск по страницам
+            // если поиск по страницам
         } else {
             StringBuilder id2Search = new StringBuilder();
             for (Integer idPage : idPages) {
@@ -268,9 +268,9 @@ public class DBConnection {
             searchResults.add(new SearchResult(
                     rs.getString("path"),
                     rs.getString("content"),
-                    "snippet",
                     rs.getDouble("absolute"),
-                    rs.getDouble("relative")));
+                    rs.getDouble("relative"),
+                    lemmaList));
         }
         return searchResults;
     }
